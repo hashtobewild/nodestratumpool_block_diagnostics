@@ -74,7 +74,7 @@ this.start = function () {
 };
 ```
 
-4. Add the diagnostics calls as needed...
+5. Add the diagnostics calls as needed...
 
 Sample Integration
 ==================
