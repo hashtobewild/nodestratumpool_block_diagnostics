@@ -9,16 +9,7 @@ If you find it interesting, or useful, please star the repo and click on watch f
 NOMP(s-nomp) Integration
 ========================
 
-1. Add a field to the s-nomp pool `config.json` file, to control global activation:
-```JSON
-{
-    ...
-    "blockDiagnostics": false,
-    ...
-}
-```
-
-2. Add configuration options to the individual coin configuration files you wish to enable diagnostics for:
+1. Add configuration options to the pool configuration files you wish to enable diagnostics for:
 ```JSON
 {
     ...
