@@ -28,8 +28,8 @@ function BlockDiagnostics(inOptions) {
   ? globalOptions.coin
   : { };
   // Local options
-  options = coinOptions.blockDiagnostics
-    ? coinOptions.blockDiagnostics
+  options = inOptions.blockDiagnostics
+    ? inOptions.blockDiagnostics
     : { enabled: false };
   // Cache of diagnostics
   blockDiagnosticItems = {};
@@ -118,7 +118,7 @@ var getModuleConfig = function(moduleName){
 
 // Globally enabled?
 var canRunGlobal = function() {
-  if (globalOptions && globalOptions.blockDiagnostics){
+  if (globalOptions && globalOptions.blockDiagnostics && globalOptions.blockDiagnostics.enabled){
     return true;
   }
   return false;
@@ -127,7 +127,7 @@ var canRunGlobal = function() {
 // Enabled for this coin?
 var canRunCoin = function() {
   if (canRunGlobal()){
-    if (coinOptions && coinOptions.blockDiagnostics && coinOptions.blockDiagnostics.enabled){
+    if (options && options.enabled){
       return true;
     }
   }
@@ -137,7 +137,7 @@ var canRunCoin = function() {
 // Specific module enabled?
 var canRunModule = function(moduleName) {
   if (canRunCoin()){
-    if (options && options.modules && options.modules[moduleName] && options.modules[moduleName].enabled){
+    if (options.modules && options.modules[moduleName] && options.modules[moduleName].enabled){
       return true;
     }
   }
