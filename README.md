@@ -1,7 +1,10 @@
 Overview
 ========
 
-A module that is meant to be integrated into node stratum pool, that will enable block diagnostics for pool operators and coin developers. Specifically it has been implemented to easily plug into nomp.
+A module that is meant to be integrated into node stratum pool, that will enable block diagnostics for pool operators and coin developers. Specifically it has been implemented to easily plug into nomp. 
+
+If you find it interesting, or useful, please star the repo and click on watch for updates ;)
+
 
 NOMP Integration
 ================
