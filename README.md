@@ -6,8 +6,8 @@ A module that is meant to be integrated into node stratum pool, that will enable
 If you find it interesting, or useful, please star the repo and click on watch for updates ;)
 
 
-NOMP Integration
-================
+NOMP(s-nomp) Integration
+========================
 
 1. Add a field to the s-nomp main `config.json` file, to control global activation:
 ```JSON
