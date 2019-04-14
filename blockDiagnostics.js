@@ -7,7 +7,7 @@ const fs = require("fs");
 
 // -------------------------- Description ----------------------------------------------------
 // This module enables running diagnostics on block data.
-// To avoid heavy disk io, disk logging is only done when the block height changes, so it keeps 
+// To avoid heavy disk io, disk logging is only done when the block height changes, so it keeps
 // a local cache of data before dumping it to disk.
 // When adding to this module, please favour clarity over brevity
 
@@ -21,12 +21,10 @@ var lastBlockWritten;
 // -------------------------- Constructor ----------------------------------------------------
 // The parameter is the pool options object
 function BlockDiagnostics(inOptions) {
-  // System wide options 
+  // System wide options
   globalOptions = inOptions;
   // Coin options
-  coinOptions = globalOptions.coin
-  ? globalOptions.coin
-  : { };
+  coinOptions = globalOptions.coin ? globalOptions.coin : {};
   // Local options
   options = inOptions.blockDiagnostics
     ? inOptions.blockDiagnostics
@@ -42,13 +40,14 @@ function BlockDiagnostics(inOptions) {
 var init = function() {
   // Stuff to run when starting...
   // First check base state
-  if (!canRunCoin() || !canLog())
-  {
+  if (!canRunCoin() || !canLog()) {
     return;
   }
 
   // Check that the log path exists
-  ensurePathExists(options.logPath + "/" + coinOptions.name, 484, function(err){
+  ensurePathExists(options.logPath + "/" + coinOptions.name, 484, function(
+    err
+  ) {
     // we may want to do something interesting here later...
   });
 };
@@ -93,32 +92,36 @@ var runSubmitBlockResultDiagnostics = function(stateObject) {
 // -------------------------- Helpers --------------------------------------------------------
 // from: https://stackoverflow.com/a/21196961
 function ensurePathExists(path, mask, cb) {
-  if (typeof mask == 'function') { // allow the `mask` parameter to be optional
-      cb = mask;
-      mask = 484;
+  if (typeof mask == "function") {
+    // allow the `mask` parameter to be optional
+    cb = mask;
+    mask = 484;
   }
   fs.mkdir(path, mask, function(err) {
-      if (err) {
-          if (err.code == 'EEXIST') cb(null); // ignore the error if the folder already exists
-          else cb(err); // something else went wrong
-      } else cb(null); // successfully created folder
+    if (err) {
+      if (err.code == "EEXIST") cb(null);
+      // ignore the error if the folder already exists
+      else cb(err); // something else went wrong
+    } else cb(null); // successfully created folder
   });
 }
 
 // Get a specific diagnostic module's config
-var getModuleConfig = function(moduleName){
-  if (options && options.modules && options.modules[moduleName]){
+var getModuleConfig = function(moduleName) {
+  if (options && options.modules && options.modules[moduleName]) {
     return options.modules[moduleName];
-  }
-  else
-  {
+  } else {
     return {};
   }
 };
 
 // Globally enabled?
 var canRunGlobal = function() {
-  if (globalOptions && globalOptions.blockDiagnostics && globalOptions.blockDiagnostics.enabled){
+  if (
+    globalOptions &&
+    globalOptions.blockDiagnostics &&
+    globalOptions.blockDiagnostics.enabled
+  ) {
     return true;
   }
   return false;
@@ -126,8 +129,8 @@ var canRunGlobal = function() {
 
 // Enabled for this coin?
 var canRunCoin = function() {
-  if (canRunGlobal()){
-    if (options && options.enabled){
+  if (canRunGlobal()) {
+    if (options && options.enabled) {
       return true;
     }
   }
@@ -136,8 +139,12 @@ var canRunCoin = function() {
 
 // Specific module enabled?
 var canRunModule = function(moduleName) {
-  if (canRunCoin()){
-    if (options.modules && options.modules[moduleName] && options.modules[moduleName].enabled){
+  if (canRunCoin()) {
+    if (
+      options.modules &&
+      options.modules[moduleName] &&
+      options.modules[moduleName].enabled
+    ) {
       return true;
     }
   }
@@ -146,8 +153,8 @@ var canRunModule = function(moduleName) {
 
 // Are we able to log?
 var canLog = function() {
-  if (canRunCoin()){
-    if (options && options.log && options.logPath && options.logPath != ""){
+  if (canRunCoin()) {
+    if (options && options.log && options.logPath && options.logPath != "") {
       return true;
     }
   }
@@ -165,26 +172,34 @@ var getBlockFilePath = function(dumpBlockHeight) {
 var logObject = function(loggedObject) {
   return new Promise(function(resolve, reject) {
     // Ensure that everything is in place... or create stubs
-    if (!blockDiagnosticItems[loggedObject.height]){
-      blockDiagnosticItems[loggedObject.height] = buildBaseFileObject(loggedObject.height);
+    if (!blockDiagnosticItems[loggedObject.height]) {
+      blockDiagnosticItems[loggedObject.height] = buildBaseFileObject(
+        loggedObject.height
+      );
     }
-    if (!blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name]){
-      blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name] = [];
+    if (
+      !blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name]
+    ) {
+      blockDiagnosticItems[loggedObject.height].diagnostics[
+        loggedObject.name
+      ] = [];
     }
     // Make sure this block has not been finalized
-    if (blockDiagnosticItems[loggedObject.height].timeend && blockDiagnosticItems[loggedObject.height].timeend != -1){
+    if (
+      blockDiagnosticItems[loggedObject.height].timeend &&
+      blockDiagnosticItems[loggedObject.height].timeend != -1
+    ) {
       // We're done with this block...
-    }
-    else{
+    } else {
       // Add the item to the current block diagnostic data
-      blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name].push(loggedObject);
+      blockDiagnosticItems[loggedObject.height].diagnostics[
+        loggedObject.name
+      ].push(loggedObject);
       // See if we need to dump the previous block
       var dumpBlockHeight = loggedObject.height - 1;
-      if (blockDiagnosticItems[dumpBlockHeight]){
+      if (blockDiagnosticItems[dumpBlockHeight]) {
         return writeBlockDiagnostics(dumpBlockHeight, loggedObject);
-      }
-      else
-      {
+      } else {
         resolve(loggedObject);
       }
     }
@@ -197,12 +212,12 @@ var logObject = function(loggedObject) {
 var writeBlockDiagnostics = function(dumpBlockHeight, loggedObject) {
   return new Promise(function(resolve, reject) {
     // Pre-Flight check(s)
-    if(!blockDiagnosticItems[dumpBlockHeight] || blockDiagnosticItems[dumpBlockHeight].timeend != -1)
-    {
+    if (
+      !blockDiagnosticItems[dumpBlockHeight] ||
+      blockDiagnosticItems[dumpBlockHeight].timeend != -1
+    ) {
       resolve(loggedObject);
-    }
-    else
-    {
+    } else {
       // finalize the cached data
       finalizeCacheItem(dumpBlockHeight);
       var logFileData = blockDiagnosticItems[dumpBlockHeight];
@@ -212,52 +227,54 @@ var writeBlockDiagnostics = function(dumpBlockHeight, loggedObject) {
   });
 };
 
-// The actual process of writing the file to disk. 
+// The actual process of writing the file to disk.
 var writeDiagnosticsFile = function(logFilePath, loggedObject) {
   return new Promise(function(resolve, reject) {
     // One file per block
     fs.writeFile(logFilePath, JSON.stringify(loggedObject), function(err) {
-      if(err) {
+      if (err) {
         reject(buildBaseError("Unable to write the file"));
-      }
-      else
-      {
-        cleanCache(loggedObject.height)
+      } else {
+        cleanCache(loggedObject.height);
         resolve(loggedObject);
       }
-    }); 
+    });
   });
 };
 
 // Make sure we don't get more data for this block
-var finalizeCacheItem = function(dumpBlockHeight){
+var finalizeCacheItem = function(dumpBlockHeight) {
   var finaliseTime = new Date().getTime();
   blockDiagnosticItems[dumpBlockHeight].timeend = finaliseTime;
-  if (!options.logKeepSpam){
+  if (!options.logKeepSpam) {
     trimSpam(dumpBlockHeight);
   }
   lastBlockWritten = dumpBlockHeight;
 };
 
 // Keep only the first and last of each diagnostic
-var trimSpam = function(dumpBlockHeight){
-  Object.keys(blockDiagnosticItems[dumpBlockHeight].diagnostics).forEach(key => {
-    let value = blockDiagnosticItems[dumpBlockHeight].diagnostics[key];
-    if (value.length > 2)
-    {
-      blockDiagnosticItems[dumpBlockHeight].diagnostics[key].splice(1, value.length - 2);
+var trimSpam = function(dumpBlockHeight) {
+  Object.keys(blockDiagnosticItems[dumpBlockHeight].diagnostics).forEach(
+    key => {
+      let value = blockDiagnosticItems[dumpBlockHeight].diagnostics[key];
+      if (value.length > 2) {
+        blockDiagnosticItems[dumpBlockHeight].diagnostics[key].splice(
+          1,
+          value.length - 2
+        );
+      }
     }
-  });
+  );
 };
 
 // Make sure we do not turn into a memory hog...
-var cleanCache = function(dumpBlockHeight){
+var cleanCache = function(dumpBlockHeight) {
   var finaliseTime = blockDiagnosticItems[dumpBlockHeight].timeend;
   // Squash the cached item and prevent new items from being added for this block
-  blockDiagnosticItems[dumpBlockHeight].timeend = {"timeend": finaliseTime};
-  // check for squashed items, older than 5 blocks ago and remove them, 
-  // this should be enough time safely (-ish) assume that something wont try to send us more data 
-  if (blockDiagnosticItems[dumpBlockHeight - 5]){
+  blockDiagnosticItems[dumpBlockHeight].timeend = { timeend: finaliseTime };
+  // check for squashed items, older than 5 blocks ago and remove them,
+  // this should be enough time safely (-ish) assume that something wont try to send us more data
+  if (blockDiagnosticItems[dumpBlockHeight - 5]) {
     delete blockDiagnosticItems[dumpBlockHeight - 5];
   }
 };
@@ -267,28 +284,27 @@ var cleanCache = function(dumpBlockHeight){
 var buildBaseError = function(message) {
   return {
     // The time at which error was created
-    "timestamp": new Date().getTime(),
+    timestamp: new Date().getTime(),
     // The error message
-    "error": message,
+    error: message,
     // Any data that is significant to this error
-    "metadata": {}
+    metadata: {}
   };
 };
-
 
 // The layout of the block file
 var buildBaseFileObject = function(blockHeight) {
   return {
     // Block height
-    "height": blockHeight,
+    height: blockHeight,
     // The time at which the block diagnostic data was created
-    "timestart": new Date().getTime(),
-    // The time at which block diagnostic data was finalized 
-    "timeend": -1,
+    timestart: new Date().getTime(),
+    // The time at which block diagnostic data was finalized
+    timeend: -1,
     // The diagnostic entries
-    "diagnostics": {},
+    diagnostics: {},
     // Any data that is significant to this file (notes etc. in future?)
-    "metadata": {}
+    metadata: {}
   };
 };
 
@@ -296,19 +312,19 @@ var buildBaseFileObject = function(blockHeight) {
 var buildBaseDiagnosticObject = function(moduleName, blockHeight, inputObject) {
   return {
     // the block height for this run
-    "height": blockHeight ? blockHeight : -1,
+    height: blockHeight ? blockHeight : -1,
     // Which diagnostic is this?
-    "name": moduleName ? moduleName : "unknown",
+    name: moduleName ? moduleName : "unknown",
     // The module configuration used
-    "config": getModuleConfig(moduleName),
+    config: getModuleConfig(moduleName),
     // The time at which the test started
-    "timestart": new Date().getTime(),
+    timestart: new Date().getTime(),
     // The time at which the test was completed
-    "timeend": new Date().getTime(),
+    timeend: new Date().getTime(),
     // The source object, that the test was run against
-    "source": inputObject,
+    source: inputObject,
     // The result objects of all the tests that were run
-    "results": []
+    results: []
   };
 };
 
@@ -316,20 +332,20 @@ var buildBaseDiagnosticObject = function(moduleName, blockHeight, inputObject) {
 var buildBaseResultObject = function(testName) {
   return {
     // What is the test called?
-    "name": testName ? testName : "unknown",
+    name: testName ? testName : "unknown",
     // The time at which the step started
-    "timestart": new Date().getTime(),
+    timestart: new Date().getTime(),
     // The time at which the step was completed
-    "timeend": -1,
+    timeend: -1,
     // Was the test a success?
-    "success": false,
+    success: false,
     // Any data that is significant to the result of the test
-    "metadata": {}
+    metadata: {}
   };
 };
 
 // -------------------------- Diagnostic Functions -------------------------------------------
-// Please try to ensure that each diagnostic only checks one thing. if you want to check more, 
+// Please try to ensure that each diagnostic only checks one thing. if you want to check more,
 // create more test functions, so that the the file does not get bloated with duplicate code
 var sampleDiagnostic = function(inputObject) {
   // All of the tests should return a test result object, as defined in buildBaseResultObject
@@ -361,7 +377,7 @@ var sampleDiagnostic = function(inputObject) {
 // [Data Description] should refer to the daemon call used, for the sake of clarity
 // [Sent/Result] refers to whether we are processing what we [Sent] to the daemon, or what the [Result] was that we got back from the daemon
 // Example 1: DiagnoseGetBlockTemplateResult
-// Uses the [Diagnose] function(s) on the [GetBlockTemplate] data returned from the daemon [Result] 
+// Uses the [Diagnose] function(s) on the [GetBlockTemplate] data returned from the daemon [Result]
 // Example 2: DiagnoseSubmitBlockSent
 // Uses the [Diagnose] functions(s) on the [SubmitBlock] data [Sent] to the daemon
 
@@ -375,7 +391,11 @@ BlockDiagnostics.prototype.DiagnoseGetBlockTemplateResult = function(
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.response.height, inputData.response);
+      var stateObject = buildBaseDiagnosticObject(
+        diagnosticName,
+        inputData.response.height,
+        inputData.response
+      );
       runGetBlockTemplateResultDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
@@ -398,7 +418,11 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockSent = function(
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
+      var stateObject = buildBaseDiagnosticObject(
+        diagnosticName,
+        inputData.height,
+        inputData
+      );
       runSubmitBlockSentDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
@@ -421,7 +445,11 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockResult = function(
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
+      var stateObject = buildBaseDiagnosticObject(
+        diagnosticName,
+        inputData.height,
+        inputData
+      );
       runSubmitBlockResultDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
