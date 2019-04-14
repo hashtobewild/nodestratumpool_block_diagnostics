@@ -20,9 +20,9 @@ var lastBlockWritten;
 
 // -------------------------- Constructor ----------------------------------------------------
 // The parameter is the pool options object
-function BlockDiagnostics(options) {
+function BlockDiagnostics(inOptions) {
   // System wide options 
-  globalOptions = options;
+  globalOptions = inOptions;
   // Coin options
   coinOptions = globalOptions.coin
   ? globalOptions.coin
