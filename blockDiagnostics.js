@@ -69,14 +69,14 @@ var runSampleDiagnostics = function(stateObject) {
   });
 };
 
-var runGetBlockTemplateDiagnostics = function(stateObject) {
+var runGetBlockTemplateResultDiagnostics = function(stateObject) {
   return new Promise(function(resolve, reject) {
     // Return the state object for further processing
     resolve(stateObject);
   });
 };
 
-var runSubmitBlockDiagnostics = function(stateObject) {
+var runSubmitBlockSentDiagnostics = function(stateObject) {
   return new Promise(function(resolve, reject) {
     // Return the state object for further processing
     resolve(stateObject);
@@ -376,7 +376,7 @@ BlockDiagnostics.prototype.DiagnoseGetBlockTemplateResult = function(
       resolve(inputData);
     } else {
       var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.response.height, inputData.response);
-      runGetBlockTemplateDiagnostics(stateObject)
+      runGetBlockTemplateResultDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
           resolve(result);
@@ -399,7 +399,7 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockSent = function(
       resolve(inputData);
     } else {
       var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
-      runSubmitBlockDiagnostics(stateObject)
+      runSubmitBlockSentDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
           resolve(result);
