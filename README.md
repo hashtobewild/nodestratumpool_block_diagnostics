@@ -9,16 +9,7 @@ If you find it interesting, or useful, please star the repo and click on watch f
 NOMP Integration
 ================
 
-1. Add the package to the `package.json` dependencies:
-```JSON
-"dependencies": {
-    ...
-    "nodestratumpool_block_diagnostics": "git+https://github.com/hashtobewild/nodestratumpool_block_diagnostics.git",
-    ...
-}
-```
-
-2. Add a field to the s-nomp main `config.json` file, to control global activation:
+1. Add a field to the s-nomp main `config.json` file, to control global activation:
 ```JSON
 {
     ...
@@ -27,7 +18,7 @@ NOMP Integration
 }
 ```
 
-3. Add configuration options to the individual coin configuration files you wish to enable diagnostics for:
+2. Add configuration options to the individual coin configuration files you wish to enable diagnostics for:
 ```JSON
 {
     ...
@@ -54,19 +45,28 @@ NOMP Integration
 Node Stratum Pool Integration
 =============================
 
-1. Require the module in `lib/pool.js` in the top of the file:
+1. Add the package to the `package.json` dependencies:
+```JSON
+"dependencies": {
+    ...
+    "nodestratumpool_block_diagnostics": "git+https://github.com/hashtobewild/nodestratumpool_block_diagnostics.git",
+    ...
+}
+```
+
+2. Require the module in `lib/pool.js` in the top of the file:
 ```JavaScript
 var requiredBlockDiagnostics = require('nodestratumpool_block_diagnostics');
 ```
 
-2. Add an initialization function:
+3. Add an initialization function:
 ```JavaScript
 function SetupBlockDiagnostics() {
     this.blockDiagnostics = new requiredBlockDiagnostics.BlockDiagnostics(options);
 }
 ```
 
-3. Call in the function you just created from `this.start = function(){...}`
+4. Call in the function you just created from `this.start = function(){...}`
 ```JavaScript
 this.start = function () {
     SetupBlockDiagnostics();
