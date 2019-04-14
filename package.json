@@ -1,0 +1,18 @@
+{
+  "name": "nodestratumpool_block_diagnostics",
+  "version": "0.0.1",
+  "description": "Block diagnostics for node stratum pool operators and blockchain developers",
+  "main": "blockDiagnostics.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Louwtjie (Loki) Taljaard a.k.a. HashToBeWild",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hashtobewild/nodestratumpool_block_diagnostics.git"
+  },
+  "dependencies": {
+    "regex": "^0.1.1"
+  }
+}
