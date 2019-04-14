@@ -9,7 +9,7 @@ If you find it interesting, or useful, please star the repo and click on watch f
 NOMP(s-nomp) Integration
 ========================
 
-1. Add a field to the s-nomp main `config.json` file, to control global activation:
+1. Add a field to the s-nomp pool `config.json` file, to control global activation:
 ```JSON
 {
     ...
