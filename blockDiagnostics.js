@@ -11,24 +11,31 @@ const fs = require("fs");
 // a local cache of data before dumping it to disk.
 // When adding to this module, please favour clarity over brevity
 
+// -------------------------- Internals ------------------------------------------------------
+var globalOptions;
+var coinOptions;
+var options;
+var blockDiagnosticItems;
+var lastBlockWritten;
+
 // -------------------------- Constructor ----------------------------------------------------
 // The parameter is the pool options object
 function BlockDiagnostics(options) {
   // System wide options 
-  this.globalOptions = options;
+  globalOptions = options;
   // Coin options
-  this.coinOptions = this.globalOptions.coin
-  ? this.globalOptions.coin
+  coinOptions = globalOptions.coin
+  ? globalOptions.coin
   : { };
   // Local options
-  this.options = this.coinOptions.blockDiagnostics
-    ? this.coinOptions.blockDiagnostics
+  options = coinOptions.blockDiagnostics
+    ? coinOptions.blockDiagnostics
     : { enabled: false };
   // Cache of diagnostics
-  this.blockDiagnosticItems = {};
+  blockDiagnosticItems = {};
   // Last item dumped to disk
-  this.lastBlockWritten = 0;
-  init.bind(this);
+  lastBlockWritten = 0;
+  init();
 }
 
 // -------------------------- Init -----------------------------------------------------------
@@ -149,7 +156,7 @@ var canLog = function() {
 
 // Where to store the diagnostic logs
 var getBlockFilePath = function(dumpBlockHeight) {
-  var basePath = this.options.logPath + "/" + coinOptions.name;
+  var basePath = options.logPath + "/" + coinOptions.name;
   var filePath = dumpBlockHeight + ".json";
   return basePath + "/" + filePath;
 };
@@ -158,22 +165,22 @@ var getBlockFilePath = function(dumpBlockHeight) {
 var logObject = function(loggedObject) {
   return new Promise(function(resolve, reject) {
     // Ensure that everything is in place... or create stubs
-    if (!this.blockDiagnosticItems[loggedObject.height]){
-      this.blockDiagnosticItems[loggedObject.height] = buildBaseFileObject(loggedObject.height);
+    if (!blockDiagnosticItems[loggedObject.height]){
+      blockDiagnosticItems[loggedObject.height] = buildBaseFileObject(loggedObject.height);
     }
-    if (!this.blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name]){
-      this.blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name] = [];
+    if (!blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name]){
+      blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name] = [];
     }
     // Make sure this block has not been finalized
-    if (this.blockDiagnosticItems[loggedObject.height].timeend && this.blockDiagnosticItems[loggedObject.height].timeend == -1){
+    if (blockDiagnosticItems[loggedObject.height].timeend && blockDiagnosticItems[loggedObject.height].timeend == -1){
       // We're done with this block...
     }
     else{
       // Add the item to the current block diagnostic data
-      this.blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name].push(loggedObject);
+      blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name].push(loggedObject);
       // See if we need to dump the previous block
       var dumpBlockHeight = loggedObject.height - 1;
-      if (this.blockDiagnosticItems[dumpBlockHeight]){
+      if (blockDiagnosticItems[dumpBlockHeight]){
         return writeBlockDiagnostics(dumpBlockHeight, loggedObject);
       }
       else
@@ -190,7 +197,7 @@ var logObject = function(loggedObject) {
 var writeBlockDiagnostics = function(dumpBlockHeight, loggedObject) {
   return new Promise(function(resolve, reject) {
     // Pre-Flight check(s)
-    if(!this.blockDiagnosticItems[dumpBlockHeight] || this.blockDiagnosticItems[dumpBlockHeight] != -1)
+    if(!blockDiagnosticItems[dumpBlockHeight] || blockDiagnosticItems[dumpBlockHeight] != -1)
     {
       resolve(loggedObject);
     }
@@ -198,7 +205,7 @@ var writeBlockDiagnostics = function(dumpBlockHeight, loggedObject) {
     {
       // finalize the cached data
       finalizeCacheItem(dumpBlockHeight);
-      var logFileData = this.blockDiagnosticItems[dumpBlockHeight];
+      var logFileData = blockDiagnosticItems[dumpBlockHeight];
       var logFilePath = getBlockFilePath(dumpBlockHeight);
       return writeDiagnosticsFile(logFilePath, logFileData);
     }
@@ -225,18 +232,18 @@ var writeDiagnosticsFile = function(logFilePath, loggedObject) {
 // Make sure we don't get more data for this block
 var finalizeCacheItem = function(dumpBlockHeight){
   var finaliseTime = new Date().getTime();
-  this.blockDiagnosticItems[dumpBlockHeight].timeend = finaliseTime;
+  blockDiagnosticItems[dumpBlockHeight].timeend = finaliseTime;
 };
 
 // Make sure we do not turn into a memory hog...
 var cleanCache = function(dumpedLoggedObject){
   var finaliseTime = dumpedLoggedObject.timeend;
   // Squash the cached item and prevent new items from being added for this block
-  this.blockDiagnosticItems[dumpBlockHeight].timeend = {"timeend": finaliseTime};
+  blockDiagnosticItems[dumpBlockHeight].timeend = {"timeend": finaliseTime};
   // check for squashed items, older than 5 blocks ago and remove them, 
   // this should be enough time safely (-ish) assume that something wont try to send us more data 
-  if (this.blockDiagnosticItems[dumpBlockHeight - 5]){
-    delete this.blockDiagnosticItems[dumpBlockHeight - 5];
+  if (blockDiagnosticItems[dumpBlockHeight - 5]){
+    delete blockDiagnosticItems[dumpBlockHeight - 5];
   }
 };
 
