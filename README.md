@@ -27,6 +27,7 @@ NOMP(s-nomp) Integration
             }
         },
         "log": false,
+        "logKeepSpam": false,
         "logPath": ""
     }
     ...
