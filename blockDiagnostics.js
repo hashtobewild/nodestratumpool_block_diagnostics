@@ -233,7 +233,9 @@ var writeDiagnosticsFile = function(logFilePath, loggedObject) {
 var finalizeCacheItem = function(dumpBlockHeight){
   var finaliseTime = new Date().getTime();
   blockDiagnosticItems[dumpBlockHeight].timeend = finaliseTime;
-  trimSpam(dumpBlockHeight);
+  if (!options.logKeepSpam){
+    trimSpam(dumpBlockHeight);
+  }
   lastBlockWritten = dumpBlockHeight;
 };
 
