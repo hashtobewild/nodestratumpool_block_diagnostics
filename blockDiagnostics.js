@@ -28,7 +28,7 @@ function BlockDiagnostics(options) {
   this.blockDiagnosticItems = {};
   // Last item dumped to disk
   this.lastBlockWritten = 0;
-  init();
+  init.bind(this);
 }
 
 // -------------------------- Init -----------------------------------------------------------
@@ -111,7 +111,7 @@ var getModuleConfig = function(moduleName){
 
 // Globally enabled?
 var canRunGlobal = function() {
-  if (this.globalOptions && this.globalOptions.blockDiagnostics){
+  if (globalOptions && globalOptions.blockDiagnostics){
     return true;
   }
   return false;
@@ -129,7 +129,7 @@ var canRunCoin = function() {
 
 // Specific module enabled?
 var canRunModule = function(moduleName) {
-  if (canRunCoin){
+  if (canRunCoin()){
     if (options && options.modules && options.modules[moduleName] && options.modules[moduleName].enabled){
       return true;
     }
@@ -139,7 +139,7 @@ var canRunModule = function(moduleName) {
 
 // Are we able to log?
 var canLog = function() {
-  if (canRunCoin){
+  if (canRunCoin()){
     if (options && options.log && options.logPath && options.logPath != ""){
       return true;
     }
