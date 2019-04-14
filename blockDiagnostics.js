@@ -361,7 +361,7 @@ BlockDiagnostics.prototype.DiagnoseGetBlockTemplateResult = function(
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputdata.height, inputData);
+      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
       runGetBlockTemplateDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
@@ -384,7 +384,7 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockSent = function(
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputdata.height, inputData);
+      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
       runSubmitBlockDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
@@ -407,7 +407,7 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockResult = function(
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputdata.height, inputData);
+      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
       runSubmitBlockResultDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
