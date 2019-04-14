@@ -233,6 +233,7 @@ var writeDiagnosticsFile = function(logFilePath, loggedObject) {
 var finalizeCacheItem = function(dumpBlockHeight){
   var finaliseTime = new Date().getTime();
   blockDiagnosticItems[dumpBlockHeight].timeend = finaliseTime;
+  lastBlockWritten = dumpBlockHeight;
 };
 
 // Make sure we do not turn into a memory hog...
