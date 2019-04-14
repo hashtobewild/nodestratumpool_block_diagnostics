@@ -71,4 +71,13 @@ this.start = function () {
 };
 ```
 
-4. Add the diagnostics calls as needed..
+4. Add the diagnostics calls as needed...
+
+Sample Integration
+==================
+I've included a complete sample integration in `BlockDiagnostics` branches of the following GitHub repos:
+
+[s-nomp](https://github.com/hashtobewild/s-nomp)
+[node-stratum-pool](https://github.com/hashtobewild/node-stratum-pool)
+
+For easy reference, I have also included sample configuration files in the [samples](./samples) directory.
