@@ -41,7 +41,7 @@ var init = function() {
   }
 
   // Check that the log path exists
-  ensurePathExists(options.logPath + "/" + coinOptions.name, 0744, function(err){
+  ensurePathExists(options.logPath + "/" + coinOptions.name, 484, function(err){
     // we may want to do something interesting here later...
   });
 };
