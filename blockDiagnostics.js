@@ -172,7 +172,7 @@ var logObject = function(loggedObject) {
       blockDiagnosticItems[loggedObject.height].diagnostics[loggedObject.name] = [];
     }
     // Make sure this block has not been finalized
-    if (blockDiagnosticItems[loggedObject.height].timeend && blockDiagnosticItems[loggedObject.height].timeend == -1){
+    if (blockDiagnosticItems[loggedObject.height].timeend && blockDiagnosticItems[loggedObject.height].timeend != -1){
       // We're done with this block...
     }
     else{
@@ -197,7 +197,7 @@ var logObject = function(loggedObject) {
 var writeBlockDiagnostics = function(dumpBlockHeight, loggedObject) {
   return new Promise(function(resolve, reject) {
     // Pre-Flight check(s)
-    if(!blockDiagnosticItems[dumpBlockHeight] || blockDiagnosticItems[dumpBlockHeight] != -1)
+    if(!blockDiagnosticItems[dumpBlockHeight] || blockDiagnosticItems[dumpBlockHeight].timeend != -1)
     {
       resolve(loggedObject);
     }
@@ -216,13 +216,13 @@ var writeBlockDiagnostics = function(dumpBlockHeight, loggedObject) {
 var writeDiagnosticsFile = function(logFilePath, loggedObject) {
   return new Promise(function(resolve, reject) {
     // One file per block
-    fs.writeFile(logFilePath, logFileData, function(err) {
+    fs.writeFile(logFilePath, JSON.stringify(loggedObject), function(err) {
       if(err) {
         reject(buildBaseError("Unable to write the file"));
       }
       else
       {
-        cleanCache(dumpBlockHeight)
+        cleanCache(loggedObject.height)
         resolve(loggedObject);
       }
     }); 
@@ -233,12 +233,24 @@ var writeDiagnosticsFile = function(logFilePath, loggedObject) {
 var finalizeCacheItem = function(dumpBlockHeight){
   var finaliseTime = new Date().getTime();
   blockDiagnosticItems[dumpBlockHeight].timeend = finaliseTime;
+  trimSpam(dumpBlockHeight);
   lastBlockWritten = dumpBlockHeight;
 };
 
+// Keep only the first and last of each diagnostic
+var trimSpam = function(dumpBlockHeight){
+  Object.keys(blockDiagnosticItems[dumpBlockHeight].diagnostics).forEach(key => {
+    let value = blockDiagnosticItems[dumpBlockHeight].diagnostics[key];
+    if (value.length > 2)
+    {
+      blockDiagnosticItems[dumpBlockHeight].diagnostics[key].splice(1, value.length - 2);
+    }
+  });
+};
+
 // Make sure we do not turn into a memory hog...
-var cleanCache = function(dumpedLoggedObject){
-  var finaliseTime = dumpedLoggedObject.timeend;
+var cleanCache = function(dumpBlockHeight){
+  var finaliseTime = blockDiagnosticItems[dumpBlockHeight].timeend;
   // Squash the cached item and prevent new items from being added for this block
   blockDiagnosticItems[dumpBlockHeight].timeend = {"timeend": finaliseTime};
   // check for squashed items, older than 5 blocks ago and remove them, 
@@ -357,11 +369,11 @@ BlockDiagnostics.prototype.DiagnoseGetBlockTemplateResult = function(
 ) {
   return new Promise(function(resolve, reject) {
     var diagnosticName = "getBlockTemplateResult";
-    if (!canRunModule(diagnosticName)) {
+    if (!inputData || !inputData.response || !canRunModule(diagnosticName)) {
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
-      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.height, inputData);
+      var stateObject = buildBaseDiagnosticObject(diagnosticName, inputData.response.height, inputData.response);
       runGetBlockTemplateDiagnostics(stateObject)
         .then(logObject)
         .then(function(result) {
@@ -380,7 +392,7 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockSent = function(
 ) {
   return new Promise(function(resolve, reject) {
     var diagnosticName = "submitBlockSent";
-    if (!canRunModule(diagnosticName)) {
+    if (!inputData || !canRunModule(diagnosticName)) {
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
@@ -403,7 +415,7 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockResult = function(
 ) {
   return new Promise(function(resolve, reject) {
     var diagnosticName = "submitBlockResult";
-    if (!canRunModule(diagnosticName)) {
+    if (!inputData || !canRunModule(diagnosticName)) {
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
     } else {
