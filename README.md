@@ -15,8 +15,8 @@ NOMP(s-nomp) Integration
     ...
     "blockDiagnostics": {
         "enabled": false,
-            "modules": {
-                "getBlockTemplateResult": {
+        "modules": {
+            "getBlockTemplateResult": {
                 "enabled": false
             },
             "submitBlockSent": {
@@ -28,7 +28,11 @@ NOMP(s-nomp) Integration
         },
         "log": false,
         "logKeepSpam": false,
-        "logPath": ""
+        "logPath": "/some/path/to/log/files/",
+        "devReport":{
+            "enabled": false,
+            "endpoint": "https://some.api.endpoint/blockerrors"
+        }
     }
     ...
 }
