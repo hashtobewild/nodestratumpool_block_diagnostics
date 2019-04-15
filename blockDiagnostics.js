@@ -351,6 +351,20 @@ var buildBaseResultObject = function(testName) {
   };
 };
 
+// A packaged submit query
+var buildBaseSubmitObject = function(
+  rpcCommand, 
+  rpcArgs
+  ) 
+{
+  return {
+    // The rpc command
+    "command": rpcCommand,
+    // The rpc command parameters
+    "parameters": rpcArgs
+  };
+};
+
 // -------------------------- Diagnostic Functions -------------------------------------------
 // Please try to ensure that each diagnostic only checks one thing. if you want to check more,
 // create more test functions, so that the the file does not get bloated with duplicate code
@@ -394,6 +408,7 @@ BlockDiagnostics.prototype.DiagnoseGetBlockTemplateResult = function(
 ) {
   return new Promise(function(resolve, reject) {
     var diagnosticName = "getBlockTemplateResult";
+    // We ignore objects that come in as errors, as this is (usually) a pool configuration issue and not a block issue.
     if (!inputData || !inputData.response || !canRunModule(diagnosticName)) {
       // If we are not allowed to run, give back what we got...
       resolve(inputData);
@@ -444,8 +459,10 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockSent = function(
 
 BlockDiagnostics.prototype.DiagnoseSubmitBlockResult = function(
   // The submitblock result data
-  inputData
+  rpcCommand, 
+  rpcArgs
 ) {
+  var inputData = buildBaseSubmitObject(rpcCommand, rpcArgs);
   return new Promise(function(resolve, reject) {
     var diagnosticName = "submitBlockResult";
     if (!inputData || !canRunModule(diagnosticName)) {
