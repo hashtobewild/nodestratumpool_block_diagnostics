@@ -165,7 +165,7 @@ var canLog = function() {
 // from: https://stackoverflow.com/a/2998822
 function zeroPad(num, size) {
   var s = "000000000" + num;
-  return s.substr(s.length-size);
+  return s.substr(s.length - size);
 }
 
 // Where to store the diagnostic logs
@@ -352,16 +352,12 @@ var buildBaseResultObject = function(testName) {
 };
 
 // A packaged submit query
-var buildBaseSubmitObject = function(
-  rpcCommand, 
-  rpcArgs
-  ) 
-{
+var buildBaseSubmitObject = function(rpcCommand, rpcArgs) {
   return {
     // The rpc command
-    "command": rpcCommand,
+    command: rpcCommand,
     // The rpc command parameters
-    "parameters": rpcArgs
+    parameters: rpcArgs
   };
 };
 
@@ -459,7 +455,7 @@ BlockDiagnostics.prototype.DiagnoseSubmitBlockSent = function(
 
 BlockDiagnostics.prototype.DiagnoseSubmitBlockResult = function(
   // The submitblock result data
-  rpcCommand, 
+  rpcCommand,
   rpcArgs
 ) {
   var inputData = buildBaseSubmitObject(rpcCommand, rpcArgs);
