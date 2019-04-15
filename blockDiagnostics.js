@@ -161,10 +161,17 @@ var canLog = function() {
   return false;
 };
 
+// zero pad the filename for better file system sorting
+// from: https://stackoverflow.com/a/2998822
+function zeroPad(num, size) {
+  var s = "000000000" + num;
+  return s.substr(s.length-size);
+}
+
 // Where to store the diagnostic logs
 var getBlockFilePath = function(dumpBlockHeight) {
   var basePath = options.logPath + "/" + coinOptions.name;
-  var filePath = dumpBlockHeight + ".json";
+  var filePath = zeroPad(dumpBlockHeight) + ".json";
   return basePath + "/" + filePath;
 };
 
